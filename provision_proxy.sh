@@ -63,8 +63,10 @@ shift
 
 # Users
 mysql -h "$1" -u root -psekret -NB mysql <<EOF >/tmp/users.sql
-select distinct "INSERT INTO mysql_users (username,password,default_hostgroup) VALUES (", CONCAT("'",User,"'"), ",", CONCAT("'",Password,"'"), ",10);" 
-from user WHERE password LIKE "*%" and User not in ('root','monitor') order by User;
+SELECT DISTINCT "INSERT INTO mysql_users (username,password,default_hostgroup) VALUES (", CONCAT("'",USER,"'"), ",", CONCAT("'",authentication_string,"'"), ",10);"
+FROM user
+WHERE authentication_string LIKE "*%"
+  AND USER NOT IN ('root', 'monitor');
 EOF
 
 $MYSQL </tmp/users.sql
