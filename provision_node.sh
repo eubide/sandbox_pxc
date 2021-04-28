@@ -100,9 +100,14 @@ if [[ $NODE_NR -eq 1 ]]; then
 	mysql -e "CREATE USER 'mariabackup'@'localhost' IDENTIFIED BY 'mar1ab4ckup';"
 	mysql -e "GRANT RELOAD, PROCESS, LOCK TABLES, REPLICATION CLIENT ON *.* TO 'mariabackup'@'localhost';"
 
+	mysql -e "CREATE DATABASE test;"
+
 	mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.%' IDENTIFIED BY 'sekret';"
 	mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'127.0.0.1' IDENTIFIED BY 'sekret';"
 	mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY 'sekret';"
+
+
+
 
 else
 	for i in {1..60}; do
