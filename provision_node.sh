@@ -81,6 +81,9 @@ innodb_use_native_aio               = 0
 server_id                           = $NODE_NR
 binlog_format                       = ROW
 
+## async replica
+# log_bin
+# log_slave_updates
 
 [sst]
 
