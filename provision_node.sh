@@ -31,8 +31,9 @@ yum -y install vim qpress percona-toolkit
 # Percona-XtraDB-Cluster-server-57.x86_64                5.7.33-31.49.1.el7
 
 # yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.31-31.45.3.el7.x86_64
+# yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.30-31.43.1.el7.x86_64
 
-yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.30-31.43.1.el7.x86_64
+yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.28-31.41.2.el7.x86_64
 
 mysqld --initialize-insecure --user=mysql
 
@@ -85,12 +86,13 @@ binlog_format                       = ROW
 # log_bin
 # log_slave_updates
 
+
 [sst]
 
 streamfmt                           = xbstream
 
 # pigz -- use-memory=32G and increase p to cpu number
-inno_apply_opts                     = "--use-memory=1G"
+# inno_apply_opts                     = " --use-memory=1G"
 compressor                          = "pigz -p2"
 decompressor                        = "pigz -p2 -d"
 
