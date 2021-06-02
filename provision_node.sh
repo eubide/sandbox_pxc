@@ -39,48 +39,45 @@ mysqld --initialize-insecure --user=mysql
 
 tee /etc/my.cnf <<EOF
 [mysql]
-
-port                                = 3306
-socket                              = /var/lib/mysql/mysql.sock
-prompt                              = 'PXC: \u@\h (\d) > '
-
+port                           = 3306
+socket                         = /var/lib/mysql/mysql.sock
+prompt                         = 'PXC: \u@\h (\d) > '
 
 [client]
-
-port                                = 3306
-socket                              = /var/lib/mysql/mysql.sock
-
+port                           = 3306
+socket                         = /var/lib/mysql/mysql.sock
 
 [mysqld]
+socket                         = /var/lib/mysql/mysql.sock
+datadir                        = /var/lib/mysql
+user                           = mysql
 
-socket                              = /var/lib/mysql/mysql.sock
-datadir                             = /var/lib/mysql
-user                                = mysql
+server_id                      = ${NODE_NR}0
+binlog_format                  = ROW
 
-wsrep_cluster_name                  = pxc_test
+log_error                      = node${NODE_NR}.err
 
-wsrep_provider                      = /usr/lib64/libgalera_smm.so
-wsrep_provider_options              = "gcs.fc_limit=500; gcs.fc_master_slave=YES; gcs.fc_factor=1.0; gcache.size=256M;"
-wsrep_slave_threads                 = 1
-wsrep_auto_increment_control        = ON
+innodb_locks_unsafe_for_binlog = 1
+innodb_autoinc_lock_mode       = 2
+innodb_file_per_table          = 1
+innodb_log_file_size           = 256M
+innodb_flush_log_at_trx_commit = 2
+innodb_buffer_pool_size        = 512M
+innodb_use_native_aio          = 0
 
-wsrep_sst_method                    = xtrabackup-v2
-wsrep_sst_auth                      = root:sekret
+wsrep_cluster_name             = pxc_test
 
-wsrep_cluster_address               = gcomm://$IPS_COMMA
-wsrep_node_address                  = $NODE_IP
-wsrep_node_name                     = node$NODE_NR
+wsrep_provider                 = /usr/lib64/libgalera_smm.so
+wsrep_provider_options         = "gcs.fc_limit=500; gcs.fc_master_slave=YES; gcs.fc_factor=1.0; gcache.size=256M;"
+wsrep_slave_threads            = 1
+wsrep_auto_increment_control   = ON
 
-innodb_locks_unsafe_for_binlog      = 1
-innodb_autoinc_lock_mode            = 2
-innodb_file_per_table               = 1
-innodb_log_file_size                = 256M
-innodb_flush_log_at_trx_commit      = 2
-innodb_buffer_pool_size             = 512M
-innodb_use_native_aio               = 0
+wsrep_sst_method               = xtrabackup-v2
+wsrep_sst_auth                 = root:sekret
 
-server_id                           = $NODE_NR
-binlog_format                       = ROW
+wsrep_cluster_address          = gcomm://$IPS_COMMA
+wsrep_node_address             = $NODE_IP
+wsrep_node_name                = node$NODE_NR
 
 ## async replica
 # log_bin
@@ -88,21 +85,18 @@ binlog_format                       = ROW
 
 
 [sst]
-
-streamfmt                           = xbstream
+streamfmt                      = xbstream
 
 # pigz -- use-memory=32G and increase p to cpu number
-# inno_apply_opts                     = " --use-memory=1G"
-compressor                          = "pigz -p2"
-decompressor                        = "pigz -p2 -d"
-
+# inno_apply_opts              = " --use-memory=1G"
+compressor                     = "pigz -p2"
+decompressor                   = "pigz -p2 -d"
 
 [xtrabackup]
-
 compress
-parallel                            = 2
-compress_threads                    = 2
-rebuild_threads                     = 2
+parallel                       = 2
+compress_threads               = 2
+rebuild_threads                = 2
 EOF
 
 if [[ $NODE_NR -eq 1 ]]; then
