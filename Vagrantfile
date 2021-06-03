@@ -33,6 +33,8 @@ node_ips = []
   first_ip += 1
 end
 
+ENV["LC_ALL"] = "en_US.UTF-8"
+
 Vagrant.configure(2) do |config|
   config.vbguest.auto_update = false if Vagrant.has_plugin?('vagrant-vbguest')
 

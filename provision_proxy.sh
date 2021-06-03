@@ -15,10 +15,13 @@ yum -y install wget tar strace vim proxysql-2.0.16 Percona-Server-client-57 sysb
 iptables -F
 setenforce 0
 
-cat <<EOF >/etc/environment
-LANG=en_US.utf-8
-LC_ALL=en_US.utf-8
-EOF
+# cat <<EOF >/etc/environment
+# LANG=en_US.utf-8
+# LC_ALL=en_US.utf-8
+# EOF
+
+sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+systemctl restart sshd.service
 
 systemctl start proxysql
 sleep 7

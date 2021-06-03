@@ -3,10 +3,13 @@
 iptables -F
 setenforce 0
 
-cat <<EOF >/etc/environment
-LANG=en_US.utf-8
-LC_ALL=en_US.utf-8
-EOF
+# cat <<EOF >/etc/environment
+# LANG=en_US.utf-8
+# LC_ALL=en_US.utf-8
+# EOF
+
+sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+systemctl restart sshd.service
 
 NODE_NR=$1
 NODE_IP="$2"
