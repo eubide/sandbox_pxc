@@ -33,18 +33,24 @@ yum -y install vim qpress percona-toolkit
 # Percona-XtraDB-Cluster-server-57.x86_64                5.7.32-31.47.1.el7
 # Percona-XtraDB-Cluster-server-57.x86_64                5.7.33-31.49.1.el7
 
-# yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.31-31.45.3.el7.x86_64
+# yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.28-31.41.2.el7.x86_64
 # yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.30-31.43.1.el7.x86_64
+yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.31-31.45.3.el7.x86_64
 
-yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.28-31.41.2.el7.x86_64
+yum -y install sysbench
 
 mysqld --initialize-insecure --user=mysql
 
 tee /etc/my.cnf <<EOF
+[client]
+port                           = 3306
+user                           = root
+password                       = sekret
+
 [mysql]
 port                           = 3306
 socket                         = /var/lib/mysql/mysql.sock
-prompt                         = 'PXC: \u@\h (\d) > '
+prompt                         = 'PXC ${NODE_NR}: \u@\h (\d) > '
 
 [client]
 port                           = 3306
@@ -58,7 +64,7 @@ user                           = mysql
 server_id                      = ${NODE_NR}0
 binlog_format                  = ROW
 
-log_error                      = node${NODE_NR}.err
+log_error                      = error-node${NODE_NR}.log
 
 innodb_locks_unsafe_for_binlog = 1
 innodb_autoinc_lock_mode       = 2
@@ -72,6 +78,7 @@ wsrep_cluster_name             = pxc_test
 
 wsrep_provider                 = /usr/lib64/libgalera_smm.so
 wsrep_provider_options         = "gcs.fc_limit=500; gcs.fc_master_slave=YES; gcs.fc_factor=1.0; gcache.size=256M;"
+# wsrep_provider_options       = "gcs.fc_limit=1; gcs.fc_master_slave=YES; gcache.size=256M;"
 wsrep_slave_threads            = 1
 wsrep_auto_increment_control   = ON
 
@@ -86,6 +93,9 @@ wsrep_node_name                = node$NODE_NR
 # log_bin
 # log_slave_updates
 
+slow_query_log
+long_query_time                = 0
+slow_query_log_file            = slowquery-node${NODE_NR}.log
 
 [sst]
 streamfmt                      = xbstream

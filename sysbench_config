@@ -1,0 +1,11 @@
+#!/bin/bash
+
+export HOST_IP=192.168.35.90
+export HOST_PORT=3306
+
+export TABLES=8
+export TABLE_SIZE=100000
+export THREADS=10
+
+# export TYPE=bulk_insert.lua
+export TYPE=oltp_read_write.lua

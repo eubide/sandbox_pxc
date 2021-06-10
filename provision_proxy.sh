@@ -24,7 +24,16 @@ sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_
 systemctl restart sshd.service
 
 systemctl start proxysql
+
 sleep 7
+
+tee /home/vagrant/.my.cnf <<EOF
+[client]
+port                           = 3306
+host                           = 127.0.0.1
+user                           = app
+password                       = app
+EOF
 
 # vagrant user custom .bashrc
 cat <<EOF >>/home/vagrant/.bashrc
