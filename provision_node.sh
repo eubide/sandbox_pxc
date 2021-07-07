@@ -35,6 +35,7 @@ yum -y install vim qpress percona-toolkit
 
 # yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.28-31.41.2.el7.x86_64
 # yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.30-31.43.1.el7.x86_64
+
 yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.31-31.45.3.el7.x86_64
 
 yum -y install sysbench
@@ -42,11 +43,6 @@ yum -y install sysbench
 mysqld --initialize-insecure --user=mysql
 
 tee /etc/my.cnf <<EOF
-[client]
-port                           = 3306
-user                           = root
-password                       = sekret
-
 [mysql]
 port                           = 3306
 socket                         = /var/lib/mysql/mysql.sock
@@ -64,7 +60,7 @@ user                           = mysql
 server_id                      = ${NODE_NR}0
 binlog_format                  = ROW
 
-log_error                      = error-node${NODE_NR}.log
+log_error                      = node${NODE_NR}.err
 
 innodb_locks_unsafe_for_binlog = 1
 innodb_autoinc_lock_mode       = 2
@@ -77,7 +73,7 @@ innodb_use_native_aio          = 0
 wsrep_cluster_name             = pxc_test
 
 wsrep_provider                 = /usr/lib64/libgalera_smm.so
-wsrep_provider_options         = "gcs.fc_limit=500; gcs.fc_master_slave=YES; gcs.fc_factor=1.0; gcache.size=256M;"
+wsrep_provider_options         = "gcs.fc_limit=100; gcs.fc_master_slave=NO; gcs.fc_factor=1.0; gcache.size=16M;"
 # wsrep_provider_options       = "gcs.fc_limit=1; gcs.fc_master_slave=YES; gcache.size=256M;"
 wsrep_slave_threads            = 1
 wsrep_auto_increment_control   = ON
@@ -95,7 +91,7 @@ wsrep_node_name                = node$NODE_NR
 
 slow_query_log
 long_query_time                = 0
-slow_query_log_file            = slowquery-node${NODE_NR}.log
+slow_query_log_file            = slowquery_node${NODE_NR}.log
 
 [sst]
 streamfmt                      = xbstream
@@ -115,7 +111,6 @@ EOF
 if [[ $NODE_NR -eq 1 ]]; then
   systemctl start mysql@bootstrap
 
-  # ProxySQL users
   mysql -e "CREATE USER 'monitor'@'%' IDENTIFIED BY 'monit0r';"
   mysql -e "GRANT USAGE ON *.* TO 'monitor'@'%';"
   mysql -e "CREATE USER 'monitor'@'localhost' IDENTIFIED BY 'monit0r';"
@@ -125,9 +120,6 @@ if [[ $NODE_NR -eq 1 ]]; then
   mysql -e "GRANT ALL ON *.* TO 'app'@'%';"
   mysql -e "CREATE USER 'app'@'localhost' IDENTIFIED BY 'app';"
   mysql -e "GRANT ALL ON *.* TO 'app'@'localhost';"
-
-  mysql -e "CREATE USER 'mariabackup'@'localhost' IDENTIFIED BY 'mar1ab4ckup';"
-  mysql -e "GRANT RELOAD, PROCESS, LOCK TABLES, REPLICATION CLIENT ON *.* TO 'mariabackup'@'localhost';"
 
   mysql -e "CREATE DATABASE test;"
 
