@@ -44,7 +44,7 @@ Vagrant.configure(2) do |config|
       node.vm.host_name = "node#{i}"
       node.vm.network 'private_network', ip: node_ips[i - 1]
       node.vm.provider :virtualbox do |vb|
-        vb.customize ['modifyvm', :id, '--memory', '512']
+        vb.customize ['modifyvm', :id, '--memory', '1024']
         vb.customize ['modifyvm', :id, '--cpus', '1']
         # if i == 3
         #  vb.customize ["modifyvm", :id, "--cpuexecutioncap", "75"]

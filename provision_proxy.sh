@@ -10,7 +10,8 @@ EOF
 
 yum -y install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
 
-yum -y install wget tar strace vim proxysql-2.0.16 Percona-Server-client-57 sysbench
+# yum -y install wget tar strace vim proxysql-2.0.16 Percona-Server-client-57 sysbench
+yum -y install wget tar strace vim proxysql-2.0.15 Percona-Server-client-57 sysbench
 
 iptables -F
 setenforce 0
