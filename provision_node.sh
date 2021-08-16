@@ -33,11 +33,13 @@ yum -y install vim qpress percona-toolkit
 # Percona-XtraDB-Cluster-server-57.x86_64                5.7.31-31.45.3.el7
 # Percona-XtraDB-Cluster-server-57.x86_64                5.7.32-31.47.1.el7
 # Percona-XtraDB-Cluster-server-57.x86_64                5.7.33-31.49.1.el7
+# Percona-XtraDB-Cluster-server-57.x86_64                5.7.34-31.51.1.el7
 
 # yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.28-31.41.2.el7.x86_64
 # yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.30-31.43.1.el7.x86_64
+# yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.31-31.45.3.el7.x86_64
 
-yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.31-31.45.3.el7.x86_64
+yum -y -q install Percona-XtraDB-Cluster-server-57-5.7.32-31.47.1.el7.x86_64
 
 yum -y install sysbench
 
