@@ -90,7 +90,9 @@ wsrep_node_name                = node$NODE_NR
 
 ## async replica
 # log_bin
-# log_slave_updates
+# gtid_mode                      = ON
+# log_slave_updates              = ON
+# enforce-gtid-consistency       = ON
 
 slow_query_log
 long_query_time                = 0
@@ -110,6 +112,8 @@ parallel                       = 2
 compress_threads               = 2
 rebuild_threads                = 2
 EOF
+
+# exit 0
 
 if [[ $NODE_NR -eq 1 ]]; then
   systemctl start mysql@bootstrap
