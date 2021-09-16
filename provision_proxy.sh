@@ -1,5 +1,24 @@
 #!/bin/bash
 
+echo "all arguments"
+echo $@
+
+iptables -F
+setenforce 0
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+
+cat <<EOF >/etc/environment
+LANG=en_US.utf-8
+LC_ALL=en_US.utf-8
+LC_CTYPE=en_US.UTF-8
+LC_ALL=en_US.UTF-8
+EOF
+
+sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+systemctl restart sshd.service
+
+yum makecache fast
+
 cat <<EOF | tee /etc/yum.repos.d/proxysql.repo
 [proxysql_repo]
 name= ProxySQL YUM repository
@@ -10,19 +29,10 @@ EOF
 
 yum -y install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
 
-# yum -y install wget tar strace vim proxysql-2.0.16 Percona-Server-client-57 sysbench
-yum -y install wget tar strace vim proxysql-2.0.15 Percona-Server-client-57 sysbench
+yum -y install wget tar strace vim Percona-Server-client-57 sysbench
 
-iptables -F
-setenforce 0
-
-# cat <<EOF >/etc/environment
-# LANG=en_US.utf-8
-# LC_ALL=en_US.utf-8
-# EOF
-
-sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
-systemctl restart sshd.service
+# yum -y install proxysql-2.0.16
+yum -y install proxysql-2.0.15
 
 systemctl start proxysql
 
@@ -38,6 +48,10 @@ EOF
 
 # vagrant user custom .bashrc
 cat <<EOF >>/home/vagrant/.bashrc
+alias admin='mysql -u admin -padmin -h 127.0.0.1 -P6032 --prompt="proxysql> "'
+EOF
+
+cat <<EOF >>/root/.bashrc
 alias admin='mysql -u admin -padmin -h 127.0.0.1 -P6032 --prompt="proxysql> "'
 EOF
 

@@ -4,10 +4,12 @@ iptables -F
 setenforce 0
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 
-# cat <<EOF >/etc/environment
-# LANG=en_US.utf-8
-# LC_ALL=en_US.utf-8
-# EOF
+cat <<EOF >/etc/environment
+LANG=en_US.utf-8
+LC_ALL=en_US.utf-8
+LC_CTYPE=en_US.UTF-8
+LC_ALL=en_US.UTF-8
+EOF
 
 sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
 systemctl restart sshd.service
@@ -20,7 +22,7 @@ BOOTSTRAP_IP="$4"
 yum makecache fast
 
 yum -y install yum install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
-yum -y install tar gdb strace perf socat pigz
+yum -y install tar gdb strace perf socat pigz wget
 yum -y install vim qpress percona-toolkit
 
 # yum -q list available --showduplicates Percona-XtraDB-Cluster-server-57
@@ -128,7 +130,7 @@ if [[ $NODE_NR -eq 1 ]]; then
   mysql -e "CREATE USER 'app'@'localhost' IDENTIFIED BY 'app';"
   mysql -e "GRANT ALL ON *.* TO 'app'@'localhost';"
 
-  mysql -e "CREATE DATABASE test;"
+  mysql -e "CREATE DATABASE IF NOT EXISTS test;"
 
   mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.%' IDENTIFIED BY 'sekret';"
   mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'127.0.0.1' IDENTIFIED BY 'sekret';"
@@ -140,10 +142,16 @@ else
     MYSQLADMIN=$(mysqladmin -uroot -psekret -h"$BOOTSTRAP_IP" ping)
     if [[ "$MYSQLADMIN" == "mysqld is alive" ]]; then
       systemctl start mysql
-      echo "ready on $i"
+      echo "ready on $i loop"
       exit
     else
       sleep 5
     fi
   done
 fi
+
+cat <<EOF >/home/vagrant/.my.cnf
+[mysql]
+user=root
+password=sekret
+EOF

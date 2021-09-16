@@ -3,22 +3,25 @@
 # base of ips that will be user
 base_ip = "192.168.35."
 
-# first ip to be user, this will be assigned to the proxy and the nodes will receive and increment number from this one
-first_ip = 90
-
 # number of proxies
 number_of_proxies = 1
+first_ip_proxies = 40
 
-# the number of pxc nodes
-number_of_nodes = 3
+# number of nodes
+number_of_nodes = 2
+first_ip_nodes = 50
 
 # create an array to store the list of proxy ips
 proxy_ips = []
 
 (1..number_of_proxies).each do |_a|
-  proxy_ips.push("#{base_ip}#{first_ip}")
-  first_ip += 1
+  proxy_ips.push("#{base_ip}#{first_ip_proxies}")
+  first_ip_proxies += 1
 end
+
+puts("---")
+puts("number of proxysql nodes: #{number_of_proxies}")
+puts("ips: #{proxy_ips.join(", ")}")
 
 # variable to store gcomm address, this will be passed to provision_node.sh
 gcomm_address = ""
@@ -28,12 +31,16 @@ gcomm_address = ""
 node_ips = []
 
 (1..number_of_nodes).each do |a|
-  node_ips.push("#{base_ip}#{first_ip}")
+  node_ips.push("#{base_ip}#{first_ip_nodes}")
   gcomm_address = "#{gcomm_address}," if a != 1
-  gcomm_address = "#{gcomm_address}#{base_ip}#{first_ip}"
-  first_ip += 1
+  gcomm_address = "#{gcomm_address}#{base_ip}#{first_ip_nodes}"
+  first_ip_nodes += 1
 end
 
+puts("---")
+puts("number of pxc nodes: #{number_of_nodes}")
+puts("ips: #{node_ips.join(", ")}")
+puts("---")
 ENV["LC_ALL"] = "en_US.UTF-8"
 
 Vagrant.configure(2) do |config|
